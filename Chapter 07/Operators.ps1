@@ -22,11 +22,11 @@
 
 # -ContainExactly - Check if collection, file or string contains a specific value
 # Case Sensitive
-"String" | Should -Contain "s" #Fail
-"String" | Should -Contain "S" #Pass
-"Blue", "Green", "Red" | Should -Contain "blue" #Fail
-"Blue", "Green", "Red" | Should -Contain "Red" #Pass
-"C:\Temp\TestFile.txt" | Should -Contain "Word"
+"String" | Should -ContainExactly "s" #Fail
+"String" | Should -ContainExactly "S" #Pass
+"Blue", "Green", "Red" | Should -ContainExactly "blue" #Fail
+"Blue", "Green", "Red" | Should -ContainExactly "Red" #Pass
+"C:\Temp\TestFile.txt" | Should -ContainExactly "Word"
 # Fails if file does not contain "Word"
 # Fails if file contains "word"
 # Pass if file contains "Word"
@@ -36,8 +36,8 @@
 "This is True" | Should -Match "This is not true" #Fail
 
 # -MatchExactly - Uses a RegEx for comparison. Case Sensitive
-"This is True" | Should -Match "This is" #Pass
-"This is True" | Should -Match "This Is" #Fail
+"This is True" | Should -MatchExactly "This is" #Pass
+"This is True" | Should -MatchExactly "This Is" #Fail
 
 # -Throw - Checks if expression is thrown.
 # Note: Input object must be in a scriptblock or else
