@@ -1,0 +1,24 @@
+{
+  "timestamp": "02-08-2023 14:22:35,373",
+  "level": "INFO",
+  "message": "Content from File1.txt successfully extracted: Content: File 1"
+}
+{
+  "timestamp": "02-08-2023 14:22:35,409",
+  "level": "INFO",
+  "message": "Content from File2.txt successfully extracted: Content: File 2"
+}
+{
+  "errormessage": "Cannot find path 'C:\\Temp\\NonExistingFile.txt' because it does not exist.",
+  "filepath": "C:\\Temp",
+  "message": "Failed to load content from NonExistingFile.txt",
+  "stacktrace": "   at System.Management.Automation.LocationGlobber.ExpandMshGlobPath("...Abbreviated Code")",
+  "file": "NonExistingFile.txt",
+  "level": "ERROR",
+  "timestamp": "02-08-2023 14:22:35,415"
+}
+{
+  "timestamp": "02-08-2023 14:22:35,417",
+  "level": "INFO",
+  "message": "Content from File3.txt successfully extracted: Content: File 3"
+}

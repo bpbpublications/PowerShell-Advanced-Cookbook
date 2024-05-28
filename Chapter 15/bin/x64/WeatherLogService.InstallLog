@@ -1,0 +1,21 @@
+﻿Installing assembly 'C:\Temp\bin\x64\WeatherLogService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = C:\Temp\bin\x64\WeatherLogService.exe
+   logfile = C:\Temp\bin\x64\WeatherLogService.InstallLog
+Installing service WeatherLogService...
+Service WeatherLogService has been successfully installed.
+Creating EventLog source WeatherLogService in log Application...
+Committing assembly 'C:\Temp\bin\x64\WeatherLogService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = C:\Temp\bin\x64\WeatherLogService.exe
+   logfile = C:\Temp\bin\x64\WeatherLogService.InstallLog
+Uninstalling assembly 'C:\Temp\bin\x64\WeatherLogService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = C:\Temp\bin\x64\WeatherLogService.exe
+   logfile = C:\Temp\bin\x64\WeatherLogService.InstallLog
+Removing EventLog source WeatherLogService.
+Service WeatherLogService is being removed from the system...
+Service WeatherLogService was successfully removed from the system.

@@ -1,0 +1,1 @@
+Publish-Module -Path .\Modules\Logging -Repository PsRepo

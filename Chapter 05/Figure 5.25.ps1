@@ -1,0 +1,1 @@
+# Files and folders are placed in the Modules\Logging directory

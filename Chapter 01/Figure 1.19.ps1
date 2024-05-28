@@ -1,0 +1,1 @@
+Get-ChildItem Cert:\CurrentUser\My | Format-Table -AutoSize

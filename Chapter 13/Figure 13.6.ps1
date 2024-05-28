@@ -1,0 +1,1 @@
+# Image of a compiled configuration file as the ones in the attached DSCConfigs directory

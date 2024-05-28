@@ -1,0 +1,1 @@
+# This is an image of the c:\Windows\system32\configuration folder on a target node.

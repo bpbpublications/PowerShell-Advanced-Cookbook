@@ -1,0 +1,4 @@
+function Show-CmdLetbinding {
+    [CmdletBinding]
+}
+

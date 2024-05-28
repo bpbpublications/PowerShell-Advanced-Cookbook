@@ -1,0 +1,2 @@
+# On Windows
+Get-PSDrive

@@ -1,0 +1,1 @@
+Get-ChildItem HKCU:\SOFTWARE\7-Zip\
