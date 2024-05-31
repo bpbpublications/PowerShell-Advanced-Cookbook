@@ -1,6 +1,6 @@
 # PowerShell Advanced Cookbook
 
-TFully unleash your scripting powers and capabilities with PowerShell 
+Fully unleash your scripting powers and capabilities with PowerShell 
 
 This is the repository for [PowerShell Advanced Cookbook
 ](https://bpbonline.com/products/powershell-advanced-cookbook),published by BPB Publications.
