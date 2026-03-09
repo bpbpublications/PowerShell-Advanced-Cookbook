@@ -1,18 +1,34 @@
+# Figure 4.13 - Custom Error Class (Identical to 4.12)
+# Chapter 4: Error Handling
+# PowerShell Advanced Cookbook - BPB Publications
+# Platform: Windows (uses C:\temp for log files)
+#
+# This example is identical to Figure 4.12, demonstrating the same
+# custom exception class pattern. See Figure 4.12 for detailed comments.
+# Included here for continuity with the book's figure numbering.
+
+# ============================================================================
+# CUSTOM ERROR CLASS DEFINITION
+# ============================================================================
+
 class MyCustomErrorClass : System.Exception {
-    # Class properties
+
     [string]$Message
     [int]$ErrorCode
     [string]$Stack
     [string]$Date
     [string]$ScriptName
     [bool]$CompressJson
-    [ValidateSet("Ok","Debug","Info","Warning","Error","Critical")]
+    [ValidateSet("Ok", "Debug", "Info", "Warning", "Error", "Critical")]
     [string]$Level
 
-    # Constructor to initialize the custom properties
-    MyCustomErrorClass([string]$Message, [int]$ErrorCode, [string]$Level, [string]$ScriptName, [bool]$CompressJson) :
-        base($Message) {
-
+    MyCustomErrorClass(
+        [string]$Message,
+        [int]$ErrorCode,
+        [string]$Level,
+        [string]$ScriptName,
+        [bool]$CompressJson
+    ) : base($Message) {
         $this.Message = $Message
         $this.ErrorCode = $ErrorCode
         $this.Stack = [System.Environment]::StackTrace
@@ -22,37 +38,47 @@ class MyCustomErrorClass : System.Exception {
         $this.Level = $Level
     }
 
-    # Custom method to override the ToString() method
     [string]ToString() {
         return "Date: $($this.Date) Level: $($this.Level) Message: $($this.Message) (Error Code: $($this.ErrorCode))"
     }
 
-    # Custom method for output custom error data in JSON
     [string]Json() {
         $Obj = [PSCustomObject]@{
-            Message = $this.message
-            Code = $this.ErrorCode
-            Level = $this.Level
-            Date = $this.Date
+            Message    = $this.Message
+            Code       = $this.ErrorCode
+            Level      = $this.Level
+            Date       = $this.Date
             ScriptName = $this.ScriptName
-            Server = $Env:COMPUTERNAME
-            Stack = $this.Stack
+            Server     = $Env:COMPUTERNAME
+            Stack      = $this.Stack
         }
-        if ($this.CompressJson -eq $true){
+        if ($this.CompressJson -eq $true) {
             return $Obj | ConvertTo-Json -Compress
         }
-        else{
+        else {
             return $Obj | ConvertTo-Json
         }
     }
 }
 
+# ============================================================================
+# DEMONSTRATION
+# ============================================================================
+
 try {
-    # Simulate an error by throwing the custom error class
     $ScriptName = $MyInvocation.MyCommand.Name
-    throw [MyCustomErrorClass]::new("This is a custom error message.", 1001, "Error", $ScriptName, $false)
+    throw [MyCustomErrorClass]::new(
+        "This is a custom error message.",
+        1001,
+        "Error",
+        $ScriptName,
+        $false  # Pretty-printed JSON
+    )
 }
-catch [MyCustomErrorClass]{
+catch [MyCustomErrorClass] {
     Write-Output "Error caught: $($_.Exception.ToString())"
-    $_.Exception.Json() | Out-File c:\temp\testlog.json -Append
+    $_.Exception.Json() | Out-File C:\temp\testlog.json -Append
 }
+
+# Expected Output:
+# Error caught: Date: 12-01-2026 10:30:45 Level: Error Message: This is a custom error message. (Error Code: 1001)

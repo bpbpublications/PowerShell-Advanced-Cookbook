@@ -1,27 +1,53 @@
-# Read XML file using accelerator
+# Recipe: Reading and Modifying XML with Type Accelerator
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates reading, navigating, modifying, and saving XML files.
+
+# ============================================================================
+# READ XML FILE USING TYPE ACCELERATOR
+# ============================================================================
+
+# The [xml] type accelerator converts file content to XmlDocument
 [xml]$Config = Get-Content C:\Temp\Config3.xml
 
-# View the type and members
+# ============================================================================
+# EXAMINE OBJECT TYPE AND MEMBERS
+# ============================================================================
+
+# View the type and available members
 $Config | Get-Member
 
-# View Section (Database)
+# ============================================================================
+# NAVIGATE XML SECTIONS
+# ============================================================================
+
+# Access different configuration sections using dot notation
 $Config.Config.Database
 
-# View Section (Azure)
 $Config.Config.Azure
 
-# View Section (ServiceAccount)
 $Config.Config.ServiceAccount
 
-# Assign individual settings to variables
+# ============================================================================
+# EXTRACT INDIVIDUAL VALUES
+# ============================================================================
+
+# Assign specific values to variables
 $DBInstance = $Config.Config.Database.Instance
 $DBInstance
+
 $DBPort = $Config.Config.Database.Port
 $DBPort
+
 $DBName = $Config.Config.Database.Database
 $DBName
 
-# Example of using extracted XML data
+# ============================================================================
+# USE EXTRACTED VALUES
+# ============================================================================
+
 $AzureSub = $Config.Config.Azure.SubscriptionId
 $AzureTen = $Config.Config.Azure.TenantId
 $SaName = $Config.Config.ServiceAccount.UserName
@@ -36,22 +62,31 @@ Write-Output "Database information:
     Port: $($Config.Config.Database.Port)
     Database: $($Config.Config.Database.Database)
 "
+
 Write-Output "ServiceAccount:
     UserName: $SaName
     Password: $($Config.Config.ServiceAccount.Password)
 "
 
-# View the Old password
+# ============================================================================
+# MODIFY XML VALUES
+# ============================================================================
+
+# View current password
 Write-Output "Old Password: $($Config.Config.ServiceAccount.Password)"
 
-# Update/Change the password for the SA in memory
+# Update value in memory
 $Config.Config.ServiceAccount.Password = "ThisIsANewPassword"
 
-# View the new Password
+# Verify change
 Write-Output "New Password: $($Config.Config.ServiceAccount.Password)"
 
-# Save the changes to and update the XMl file
+# ============================================================================
+# SAVE CHANGES TO FILE
+# ============================================================================
+
+# The Save() method writes the modified XML back to file
 $Config.Save("C:\Temp\Config3.xml")
 
-# View the new saved content of the XML file
+# Verify the file was updated
 Get-Content "C:\Temp\Config3.xml"

@@ -1,3 +1,14 @@
+# Figure 8.23 - Accessing JSON Data with Dot Notation
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates accessing specific properties from JSON data using dot notation.
+
+# ============================================================================
+# CREATE AND SAVE JSON CONFIG
+# ============================================================================
+
 $Config = @{
     Config = @{
         Database = @{
@@ -13,12 +24,12 @@ $Config = @{
         }
         ServiceAccount = @(
             @{
-                Id = 1
+                Id       = 1
                 UserName = "Service.DBUser"
                 Password = "ThisIsARandomPwd"
             }
             @{
-                Id = 2
+                Id       = 2
                 UserName = "Service.AzureUser"
                 Password = "VerySecretPwd"
             }
@@ -26,16 +37,47 @@ $Config = @{
     }
 }
 
-# Write Json config file
+# Write JSON config file
 $Config | ConvertTo-Json -Depth 3 | Out-File C:\Temp\Config1.json
 
-# Content and type of the $Config variable reading JSON data from a file using Get-Content and converting it from JSON with the ConvertFrom-Json cmdlet
+# ============================================================================
+# READ JSON AND ACCESS PROPERTIES
+# ============================================================================
+
+# Read and convert from JSON
 $Config = Get-Content C:\Temp\Config1.json | ConvertFrom-Json
 
-# using dot notation to get specific configuration data properties from the $Config variable
-
+# Access specific property values using dot notation
 $Config.Config.Azure.TenantID
 
 $Config.Config.Azure.ClientID
 
 $Config.Config.Database.Instance
+
+# ============================================================================
+# DOT NOTATION PATTERN
+# ============================================================================
+
+# $Object.Level1.Level2.Property
+# Each dot navigates one level deeper into the object hierarchy
+#
+# JSON structure:          PowerShell access:
+# { "Config": {            $Config.Config
+#     "Azure": {           $Config.Config.Azure
+#       "TenantID": "..."  $Config.Config.Azure.TenantID
+#     }
+#   }
+# }
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# $Config.Config.Azure.TenantID:
+# 1e9d4a5f-9b2a-6e7b-3a7d-2c4d60b7ca7
+#
+# $Config.Config.Azure.ClientID:
+# a8d2c4b6-1f7e-4e6a-b2d9-8c3a9d5e1f4c
+#
+# $Config.Config.Database.Instance:
+# DBServer

@@ -1,3 +1,16 @@
+# Figure 8.4 - XML Parsing Error Handling
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates XML parsing errors when XML is malformed (missing closing tag).
+
+# ============================================================================
+# MALFORMED XML EXAMPLE
+# ============================================================================
+
+# This XML is intentionally malformed - missing the closing </Config> tag
+# When PowerShell tries to parse this, it will throw an error
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -18,10 +31,32 @@
     </ServiceAccount>
 
 "@
+# Note: Missing </Config> closing tag above - THIS WILL CAUSE AN ERROR!
 
-# Introduced error by removing the </Config> element
-# This example should be added to a file with the missing element.
+# ============================================================================
+# READING MALFORMED XML FROM FILE
+# ============================================================================
 
-# $XmlObject.Save("C:\Temp\Config3.xml")
-[xml]$Config = Get-Content C:\Temp\Config3.xml # Should introduce error!
+# If you save malformed XML to a file and try to read it:
+# $XmlObject.Save("C:\Temp\Config3.xml")  # Would fail anyway
+[xml]$Config = Get-Content C:\Temp\Config3.xml  # Should introduce error!
 
+# ============================================================================
+# EXPECTED ERROR
+# ============================================================================
+
+# Exception: Cannot convert value "..." to type "System.Xml.XmlDocument".
+# Error: "Unexpected end of file has occurred. The following elements
+# are not closed: Config. Line X, position Y."
+
+# ============================================================================
+# BEST PRACTICE: VALIDATE XML BEFORE PARSING
+# ============================================================================
+
+# Always use try/catch when parsing XML from external sources:
+# try {
+#     [xml]$Config = Get-Content C:\Temp\Config3.xml
+# }
+# catch {
+#     Write-Error "Failed to parse XML: $_"
+# }

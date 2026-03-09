@@ -1,3 +1,14 @@
+# Figure 8.8 - Select-Xml with XPath Expressions
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates using Select-Xml cmdlet with XPath expressions to query XML.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,8 +30,35 @@
 </Config>
 "@
 
-# Save to xml file
+# Save to XML file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Read xml content and query using Select-Xml and XPath expressions
+# ============================================================================
+# QUERY XML USING SELECT-XML AND XPATH
+# ============================================================================
+
+# Select all nodes that contain text (excluding whitespace-only nodes)
+# The normalize-space() function trims whitespace and returns empty string if only whitespace
 Select-Xml -Path C:\Temp\Config3.xml -XPath "//node()[normalize-space()]"
+
+# ============================================================================
+# XPATH EXPRESSION EXPLAINED
+# ============================================================================
+
+# //node()              - Select all nodes at any depth
+# [normalize-space()]   - Filter: only nodes where normalize-space() is truthy
+#                         (i.e., nodes that contain non-whitespace text)
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Node                     Path                      Pattern
+# ----                     ----                      -------
+# Config                   InputStream               //node()[normalize-space()]
+# Database                 InputStream               //node()[normalize-space()]
+# #text                    InputStream               //node()[normalize-space()]
+# #text                    InputStream               //node()[normalize-space()]
+# ...
+#
+# Each result contains the matched node, the source path, and the XPath pattern used

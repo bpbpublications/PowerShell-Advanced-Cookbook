@@ -1,3 +1,14 @@
+# Infrastructure.Tests.ps1
+# Chapter 7: Testing with Pester
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Windows (uses Test-NetConnection, Azure CLI)
+# Infrastructure validation tests for network, servers, databases, and Azure.
+
+# ============================================================================
+# NETWORK CONNECTIVITY TESTS
+# ============================================================================
+
 Describe -Tag "Network" "Website connections" {
     Context "Google site Tests" {
         It "Test Google network connectivity" {
@@ -21,7 +32,11 @@ Describe -Tag "Network" "Website connections" {
     }
 }
 
-# Servers must exist!
+# ============================================================================
+# SERVER CONNECTIVITY TESTS
+# ============================================================================
+
+# Note: These servers must exist in your environment
 Describe -Tag "Network" "Server connections" {
     Context "Webservers" {
         It "Should be able to ping PS-HOST01" {
@@ -41,7 +56,11 @@ Describe -Tag "Network" "Server connections" {
     }
 }
 
-# Requires sqlserver module (Install-Module sqlserver)!
+# ============================================================================
+# DATABASE CONNECTIVITY TESTS
+# ============================================================================
+
+# Requires: Install-Module SqlServer
 Describe -Tag "Database" "Database tests" {
     Context "Database tests: MyDatabase" {
         It "Should connect to the database and retreive data" {
@@ -55,17 +74,22 @@ Describe -Tag "Database" "Database tests" {
     }
 }
 
-# An Azure subscription is required!
+# ============================================================================
+# AZURE CLOUD INFRASTRUCTURE TESTS
+# ============================================================================
+
+# Requires: Azure CLI installed and configured
 Describe -Tag "Azure" "Cloud Tests" {
     BeforeAll {
-        # Requires AzureCLI
-        if (-not ((az account list --query "[].id" --output tsv) -contains "50c527e4-b726-4c71-b507-de6cfa9aefa4") ){
+        # Login to Azure if not already authenticated
+        # Replace with your actual subscription ID
+        if (-not ((az account list --query "[].id" --output tsv) -contains "50c527e4-b726-4c71-b507-de6cfa9aefa4") ) {
             az login
         }
     }
     Context "Test Resource Groups" {
         It "Resource group: RG-Test should exist" {
-            $Result = Az group exists --name "RG-Test"
+            $Result = az group exists --name "RG-Test"
             $Result | Should -Match true
         }
     Context "Other Azure tests" {
@@ -80,3 +104,19 @@ Describe -Tag "Azure" "Cloud Tests" {
     }
 }
 
+# ============================================================================
+# USAGE
+# ============================================================================
+
+# Run all infrastructure tests:
+# Invoke-Pester -Path .\Infrastructure.Tests.ps1
+
+# Run only network tests:
+# $Config = New-PesterConfiguration
+# $Config.Filter.Tag = "Network"
+# Invoke-Pester -Configuration $Config
+
+# Run only Azure tests:
+# $Config = New-PesterConfiguration
+# $Config.Filter.Tag = "Azure"
+# Invoke-Pester -Configuration $Config

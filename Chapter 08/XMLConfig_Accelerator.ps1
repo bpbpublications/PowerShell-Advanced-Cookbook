@@ -1,3 +1,16 @@
+# Recipe: Creating XML with Type Accelerator
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates creating XML from a here-string using the [xml] type accelerator.
+
+# ============================================================================
+# CREATE XML USING TYPE ACCELERATOR
+# ============================================================================
+
+# The [xml] type accelerator parses the string and creates an XmlDocument
+# This is the simplest way to create XML when you know the structure
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,4 +32,18 @@
 </Config>
 "@
 
+# ============================================================================
+# SAVE XML TO FILE
+# ============================================================================
+
+# The Save() method properly formats and writes the XML
 $XmlObject.Save("C:\Temp\Config3.xml")
+
+# ============================================================================
+# ADVANTAGES OF TYPE ACCELERATOR
+# ============================================================================
+
+# - Simple syntax for known XML structures
+# - Validates XML at parse time (catches errors immediately)
+# - Creates full XmlDocument with all methods (Save, SelectNodes, etc.)
+# - Supports here-strings for readable multi-line XML

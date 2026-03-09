@@ -1,3 +1,14 @@
+# Figure 8.13 - Iterating XPath Results with ForEach-Object
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates iterating through XPath results to extract node names and attributes.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,11 +30,35 @@
 </Config>
 "@
 
-# Save to xml file
+# Save to XML file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Using Foreach-Object to loop through XPath result to get node names and corresponding id attribute values
+# ============================================================================
+# ITERATE THROUGH XPATH RESULTS
+# ============================================================================
+
+# Select all elements with an "id" attribute
 $SearchAttributePresence = Select-Xml -Path C:\Temp\Config3.xml -XPath "//*[@id]"
+
+# Use ForEach-Object to iterate and format output
+# Shows the element name and its id attribute value
 $SearchAttributePresence | ForEach-Object {
     "$($_.Node.Name) : $($_.Node.id)"
 }
+
+# ============================================================================
+# EXPLANATION
+# ============================================================================
+
+# $_.Node.Name  - The XML element name (Database, Azure, ServiceAccount)
+# $_.Node.id    - The value of the "id" attribute on that element
+#
+# This pattern is useful for discovering the structure of unknown XML documents
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Database : database
+# Azure : azure
+# ServiceAccount : serviceaccount

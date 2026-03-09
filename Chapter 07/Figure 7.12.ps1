@@ -1,103 +1,77 @@
-# Cross platform functions
+# Figure 7.12 - Filter Tests by Name Pattern
+# Chapter 7: Testing with Pester
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 7+)
+# Demonstrates filtering Pester tests by Describe block name using wildcards.
 
-# function Linux-String {
-#     return "I am a Linux String"
-# }
-# function Windows-String {
-#     return "I am a Windows String"
-# }
-# function MacOS-String {
-#     return "I am a MacOS String"
-# }
-# function Linux-RootPath {
-#     return "/"
-# }
-# function Windows-RootPath {
-#     return "c:\"
-# }
-# function MacOS-RootPath {
-#     return "/"
-# }
-# function Linux-Other {
-#     sudo apt-get update && sudo apt-get upgrade
-# }
-# function Windows-Other {
-#     Get-PSDrive WSMan
-# }
-# function MacOS-Other {
-#     sw_vers -productVersion
-# }
+# ============================================================================
+# CROSS-PLATFORM FUNCTIONS (REFERENCE)
+# ============================================================================
 
+# function Linux-String { return "I am a Linux String" }
+# function Windows-String { return "I am a Windows String" }
+# function MacOS-String { return "I am a MacOS String" }
+# function Linux-RootPath { return "/" }
+# function Windows-RootPath { return "c:\" }
+# function MacOS-RootPath { return "/" }
+# function Linux-Other { sudo apt-get update && sudo apt-get upgrade }
+# function Windows-Other { Get-PSDrive WSMan }
+# function MacOS-Other { sw_vers -productVersion }
 
-# Cross-platform functions test cases
+# ============================================================================
+# PLATFORM-TAGGED TEST CASES (REFERENCE)
+# ============================================================================
 
-# Describe -Tag "Linux" "Linux Tests - Platform independent" {
-#     Context "Strings" {   
-#         It "Must be a Linux String" {
-#             $String = Linux-String
-#             $String | Should -Be "I am a Linux String"
-#         }
-#     }
-#     Context "Paths" {
-#         It "Must be the Root Path" {
-#             $Path = Linux-RootPath
-#             $Path | Should -Be "/"
-#         }
-#     }
-# }
-# Describe -Tag "Linux" "Linux Tests - Platform dependent" {
-#     It "Must not throw an error" {
-#         $Other = Linux-Other
-#         {$Other} | Should -Not -Throw
-#     }
-# }
-# Describe -Tag "Windows" "Windows Tests - Platform independent" {
-#     Context "Strings" {   
-#         It "Must be a Windows String" {
-#             $String = Windows-String
-#             $String | Should -Be "I am a Windows String"
-#         }
-#     }
-#     Context "Paths" {
-#         It "Must be the Root Path" {
-#             $Path = Windows-RootPath
-#             $Path | Should -Be "C:\"
-#         }
-#     }
-# }
-# Describe -Tag "Windows" "Windows Tests - Platform dependent" {
-#     It "Must not throw an error" {
-#         $Other = Windows-Other
-#         {$Other} | Should -Not -Throw
-#     }
-# }
-# Describe -Tag "MacOS" "MacOS Tests - Platform independent" {
-#     Context "Strings" {   
-#         It "Must be a MacOS String" {
-#             $String = MacOS-String
-#             $String | Should -Be "I am a MacOS String"
-#         }
-#     }
-#     Context "Paths" {
-#         It "Must be the Root Path" {
-#             $Path = MacOS-RootPath
-#             $Path | Should -Be "/"
-#         }
-#     }
-# }
-# Describe -Tag "MacOS" "MacOS Tests - Platform dependent" {
-#     It "Must not throw an error" {
-#         $Other = MacOS-Other
-#         {$Other} | Should -Not -Throw
-#     }
-# }
+# Tests have Describe blocks with names like:
+# - "Linux Tests - Platform independent"
+# - "Linux Tests - Platform dependent"
+# - "Windows Tests - Platform independent"
+# - "Windows Tests - Platform dependent"
+# - "MacOS Tests - Platform independent"
+# - "MacOS Tests - Platform dependent"
 
+# See Figure 7.10 for full test definitions
 
-# Create a Pester configuration. 
+# ============================================================================
+# RUN ONLY PLATFORM-INDEPENDENT TESTS
+# ============================================================================
+
 $PesterConfig = New-PesterConfiguration
 $PesterConfig.Output.Verbosity = "Detailed"
+
+# Filter.FullName uses wildcard matching on Describe block names
+# "* independent" matches any Describe block ending with "independent"
 $PesterConfig.Filter.FullName = "* independent"
 
-
-# Invoke Pester using the configuration
 Invoke-Pester -Configuration $PesterConfig
+
+# Expected Output:
+# Describing Linux Tests - Platform independent
+#   Context Strings
+#     [+] Must be a Linux String
+#   Context Paths
+#     [+] Must be the Root Path
+# Describing Windows Tests - Platform independent
+#   Context Strings
+#     [+] Must be a Windows String
+#   Context Paths
+#     [+] Must be the Root Path
+# Describing MacOS Tests - Platform independent
+#   Context Strings
+#     [+] Must be a MacOS String
+#   Context Paths
+#     [+] Must be the Root Path
+# Tests Passed: 6, Failed: 0, Skipped: 0
+
+# Note: "Platform dependent" tests are skipped because they don't match the pattern
+
+# ============================================================================
+# FILTER BY MULTIPLE PATTERNS
+# ============================================================================
+
+# You can also specify multiple exact names:
+# $PesterConfig.Filter.FullName = @(
+#     "Linux Tests - Platform independent",
+#     "Windows Tests - Platform independent"
+# )

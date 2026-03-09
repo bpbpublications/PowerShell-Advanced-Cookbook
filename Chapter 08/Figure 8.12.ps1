@@ -1,3 +1,14 @@
+# Figure 8.12 - XPath Attribute Selection
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates selecting elements that have specific attributes using XPath.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,8 +30,34 @@
 </Config>
 "@
 
-# Save to xml file
+# Save to XML file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Nodes that contain the “id” attribute
+# ============================================================================
+# SELECT NODES WITH SPECIFIC ATTRIBUTE
+# ============================================================================
+
+# Find all elements that have an "id" attribute (regardless of value)
+# //*[@id] means: any element, at any depth, that has an "id" attribute
 Select-Xml -Path C:\Temp\Config3.xml -XPath "//*[@id]"
+
+# ============================================================================
+# XPATH ATTRIBUTE EXPRESSION EXPLAINED
+# ============================================================================
+
+# //       - Search at any depth in the document
+# *        - Match any element name
+# [@id]    - Filter: only elements that have an "id" attribute
+# //*[@id] - Combined: any element anywhere with an "id" attribute
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Node           Path          Pattern
+# ----           ----          -------
+# Database       InputStream   //*[@id]
+# Azure          InputStream   //*[@id]
+# ServiceAccount InputStream   //*[@id]
+#
+# All three section elements have "id" attributes, so all three are returned

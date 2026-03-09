@@ -1,3 +1,14 @@
+# Figure 8.5 - Reading XML and Navigating Sections
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates reading XML files and navigating to different sections.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,17 +30,48 @@
 </Config>
 "@
 
-# Save to xml file
+# Save the XML to a file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Read from file, assign to variable
+# ============================================================================
+# READ XML FROM FILE
+# ============================================================================
+
+# Read from file and assign to variable
+# Note: Get-Content returns the file content, [xml] cast is needed for parsing
 $Config = Get-Content C:\Temp\Config3.xml
 
-# View Database section data
+# ============================================================================
+# NAVIGATE TO XML SECTIONS USING DOT NOTATION
+# ============================================================================
+
+# View the Database section - returns all child elements
 $Config.Config.Database
 
-# View Azure section data
+# View the Azure section
 $Config.Config.Azure
 
-# View ServiceAccount section data
+# View the ServiceAccount section
 $Config.Config.ServiceAccount
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# $Config.Config.Database:
+# id       : database
+# Instance : DBServer
+# Port     : 1433
+# Database : TestDB
+#
+# $Config.Config.Azure:
+# id           : azure
+# SubscriptionID : 9c4b3e8a-2d1f-6a7b-5e9c-8d3a6f1c4b9e
+# TenantID       : 1e9d4a5f-9b2a-6e7b-3a7d-2c4d60b7ca7
+# ClientID       : a8d2c4b6-1f7e-4e6a-b2d9-8c3a9d5e1f4c
+# ClientSecret   : 5e2d4b3a-7c8d-9b2a-6e4f-7a1f6c3b2d8a
+#
+# $Config.Config.ServiceAccount:
+# id       : serviceaccount
+# UserName : Service.DBUser
+# Password : ThisIsARandomPwd

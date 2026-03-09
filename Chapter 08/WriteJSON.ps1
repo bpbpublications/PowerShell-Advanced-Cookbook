@@ -1,6 +1,15 @@
-# PowerShell object to convert to JSON
+# Recipe: Writing JSON Configuration Files
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates converting PowerShell objects to JSON and writing to file.
 
+# ============================================================================
+# CREATE CONFIGURATION OBJECT
+# ============================================================================
 
+# Define a configuration structure using nested hashtables
 $Config = @{
     Config = @{
         Database = @{
@@ -16,12 +25,12 @@ $Config = @{
         }
         ServiceAccount = @(
             @{
-                Id = 1
+                Id       = 1
                 UserName = "Service.DBUser"
                 Password = "ThisIsARandomPwd"
             }
             @{
-                Id = 2
+                Id       = 2
                 UserName = "Service.AzureUser"
                 Password = "VerySecretPwd"
             }
@@ -29,6 +38,26 @@ $Config = @{
     }
 }
 
-#$Config | ConvertTo-Json | Out-File C:\Temp\Config1.json
+# ============================================================================
+# CONVERT TO JSON AND SAVE
+# ============================================================================
+
+# Option 1: Default depth (2) - WARNING: May truncate nested data!
+# $Config | ConvertTo-Json | Out-File C:\Temp\Config1.json
+
+# Option 2: Specify depth to preserve all nested data (RECOMMENDED)
 $Config | ConvertTo-Json -Depth 3 | Out-File C:\Temp\Config1.json
-#$Config | ConvertTo-Json -Depth 3 -Compress | Out-File C:\Temp\Config1.json
+
+# Option 3: Compressed output (single line, no whitespace)
+# $Config | ConvertTo-Json -Depth 3 -Compress | Out-File C:\Temp\Config1.json
+
+# ============================================================================
+# IMPORTANT: DEPTH PARAMETER
+# ============================================================================
+
+# Always calculate the depth of your object structure:
+# - Level 1: $Config
+# - Level 2: $Config.Config
+# - Level 3: $Config.Config.Database.Instance
+#
+# Set -Depth to at least match your deepest nesting level

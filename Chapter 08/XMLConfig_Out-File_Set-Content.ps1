@@ -1,3 +1,16 @@
+# Recipe: Writing XML as Text (Not Recommended)
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates writing XML as plain text (for comparison with proper methods).
+
+# ============================================================================
+# XML AS PLAIN TEXT STRING
+# ============================================================================
+
+# This is XML content stored as a regular string
+# No XML validation or parsing occurs
 $XmlText = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,5 +32,23 @@ $XmlText = @"
 </Config>
 "@
 
+# ============================================================================
+# WRITE TO FILE AS TEXT
+# ============================================================================
+
+# Out-File: Writes with default encoding, adds newline
 $XmlText | Out-File C:\Temp\Config1.xml
+
+# Set-Content: Similar but with different default encoding
 $XmlText | Set-Content C:\Temp\Config2.xml
+
+# ============================================================================
+# WHY THIS APPROACH IS NOT RECOMMENDED
+# ============================================================================
+
+# - No XML validation: Malformed XML won't be detected
+# - No formatting: Output matches input exactly (no pretty-print)
+# - Encoding issues: May not match XML declaration encoding
+# - No manipulation: Can't easily modify individual elements
+#
+# Recommended approach: Use [xml] accelerator + .Save() method

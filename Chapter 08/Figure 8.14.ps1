@@ -1,3 +1,14 @@
+# Figure 8.14 - XPath Filtering by Attribute Value
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates filtering XML elements by specific attribute values using XPath.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,12 +30,44 @@
 </Config>
 "@
 
-# Save to xml file
+# Save to XML file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Searching for and filtering nodes with specific attributes
+# ============================================================================
+# FILTER BY SPECIFIC ATTRIBUTE VALUE
+# ============================================================================
+
+# Find element where id attribute equals 'serviceaccount'
 $Att = Select-Xml -Path C:\Temp\Config3.xml -XPath "//*[@id='serviceaccount']"
+
+# View the matched node
 $Att.Node
 
+# Access child element values
 $Att.Node.UserName
 $Att.Node.Password
+
+# ============================================================================
+# XPATH ATTRIBUTE VALUE FILTER EXPLAINED
+# ============================================================================
+
+# //                    - Search anywhere in the document
+# *                     - Match any element
+# [@id='serviceaccount'] - Filter: id attribute must equal 'serviceaccount'
+#
+# Note: Attribute values in XPath are case-sensitive
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# $Att.Node:
+# id       : serviceaccount
+# UserName : Service.DBUser
+# Password : ThisIsARandomPwd
+#
+# $Att.Node.UserName:
+# Service.DBUser
+#
+# $Att.Node.Password:
+# ThisIsARandomPwd

@@ -1,9 +1,41 @@
-# This is an example since the signature will be invalid on other systems that the one it was created on
+# Figure 5.17 - Signed Script Example
+# Chapter 5: Working with Scripts
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# This script has been digitally signed with a code signing certificate.
+# Note: The signature is only valid on the system where it was created.
+#
+# Platform: Windows only
 
-# I need to sign this script!
+# ============================================================================
+# SCRIPT CONTENT
+# ============================================================================
 
 Write-Output "I need to sign this script!"
 
+# ============================================================================
+# SIGNATURE VERIFICATION
+# ============================================================================
+
+# To verify this script's signature:
+# Get-AuthenticodeSignature -FilePath ".\Figure 5.17.ps1"
+#
+# Expected output on original system: Status = Valid
+# Expected output on other systems: Status = UnknownError
+# (because the self-signed certificate is not trusted)
+
+# ============================================================================
+# SIGNATURE BLOCK BELOW
+# ============================================================================
+
+# The signature block is automatically appended by Set-AuthenticodeSignature
+# It contains:
+# - The digital signature (encrypted hash)
+# - Certificate information
+# - Signing timestamp
+#
+# IMPORTANT: Any modification to the script above this line
+# will invalidate the signature!
 
 # SIG # Begin signature block
 # MIIIogYJKoZIhvcNAQcCoIIIkzCCCI8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

@@ -1,3 +1,16 @@
+# Figure 8.1 - XML as Plain Text String
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates that XML stored as a plain string has no XML-specific properties.
+
+# ============================================================================
+# XML AS PLAIN TEXT (STRING TYPE)
+# ============================================================================
+
+# Define XML content using a here-string
+# When stored as a plain string, PowerShell treats it as text, not XML
 $XmlText = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,7 +32,35 @@ $XmlText = @"
 </Config>
 "@
 
-#$XmlText | Out-File C:\Temp\Config1.xml
-#$XmlText | Set-Content C:\Temp\Config2.xml
+# ============================================================================
+# EXAMINE THE STRING TYPE
+# ============================================================================
 
+# Get-Member reveals this is just a System.String, not an XML object
+# No XML-specific methods like SelectNodes, Save, etc. are available
 $XmlText | Get-Member
+
+# ============================================================================
+# WRITING STRING TO FILE (NOT RECOMMENDED FOR XML)
+# ============================================================================
+
+# These methods write the text but don't validate or format XML
+# $XmlText | Out-File C:\Temp\Config1.xml
+# $XmlText | Set-Content C:\Temp\Config2.xml
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Get-Member shows string methods only:
+#    TypeName: System.String
+#
+# Name             MemberType
+# ----             ----------
+# Clone            Method
+# Contains         Method
+# EndsWith         Method
+# ...
+#
+# Note: No XML-specific methods like SelectSingleNode, Save, Load, etc.
+# To work with XML properly, use the [xml] type accelerator (see Figure 8.2)

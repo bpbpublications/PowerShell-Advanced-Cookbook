@@ -1,3 +1,14 @@
+# Figure 8.9 - Selecting Root Node with XPath
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates selecting the root node and listing parent nodes using XPath.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,9 +30,35 @@
 </Config>
 "@
 
-# Save to xml file
+# Save to XML file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Selecting the root node and list all parent nodes in the root node
+# ============================================================================
+# SELECT ROOT NODE USING XPATH
+# ============================================================================
+
+# The XPath "/*" selects the root element (first child of the document)
+# This returns a SelectXmlInfo object containing the matched node
 $Root = Select-Xml -Path C:\Temp\Config3.xml -XPath "/*"
+
+# Access the Node property to get the actual XML element
+# This displays all parent nodes (direct children of root)
 $Root.Node
+
+# ============================================================================
+# XPATH EXPRESSION EXPLAINED
+# ============================================================================
+
+# /   - Start from the document root
+# *   - Select any element (wildcard)
+# /*  - Combined: select the root element of the document
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Database       Azure          ServiceAccount
+# --------       -----          --------------
+# Database       Azure          ServiceAccount
+#
+# The output shows the three main sections under the Config root element

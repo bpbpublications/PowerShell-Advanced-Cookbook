@@ -1,3 +1,16 @@
+# Figure 8.2 - XML Type Accelerator
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates using the [xml] type accelerator to create XmlDocument objects.
+
+# ============================================================================
+# XML TYPE ACCELERATOR
+# ============================================================================
+
+# The [xml] type accelerator converts string content to System.Xml.XmlDocument
+# This enables XML-specific methods and properties for navigation and manipulation
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,6 +32,38 @@
 </Config>
 "@
 
-#$XmlObject | Out-File C:\Temp\Config2.xml
+# ============================================================================
+# EXAMINE THE XML DOCUMENT TYPE
+# ============================================================================
 
+# Get-Member now reveals this is an XmlDocument with XML-specific capabilities
 $XmlObject | Get-Member
+
+# ============================================================================
+# SAVING XML DOCUMENTS
+# ============================================================================
+
+# The XmlDocument.Save() method properly formats and saves XML
+# This is the recommended way to write XML files
+# $XmlObject.Save("C:\Temp\Config3.xml")
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Get-Member shows XmlDocument members:
+#    TypeName: System.Xml.XmlDocument
+#
+# Name                 MemberType
+# ----                 ----------
+# AppendChild          Method
+# CreateElement        Method
+# GetElementsByTagName Method
+# Load                 Method
+# Save                 Method
+# SelectNodes          Method
+# SelectSingleNode     Method
+# ...
+# Config               Property     (auto-generated from root element)
+#
+# Note: PowerShell automatically creates properties for XML element names

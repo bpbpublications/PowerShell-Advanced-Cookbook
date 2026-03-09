@@ -1,3 +1,14 @@
+# Figure 8.19 - Viewing Truncated JSON Data
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates viewing JSON output that was truncated due to depth limitation.
+
+# ============================================================================
+# CONFIGURATION WITH NESTED STRUCTURE
+# ============================================================================
+
 $Config = @{
     Config = @{
         Database = @{
@@ -13,12 +24,12 @@ $Config = @{
         }
         ServiceAccount = @(
             @{
-                Id = 1
+                Id       = 1
                 UserName = "Service.DBUser"
                 Password = "ThisIsARandomPwd"
             }
             @{
-                Id = 2
+                Id       = 2
                 UserName = "Service.AzureUser"
                 Password = "VerySecretPwd"
             }
@@ -26,8 +37,30 @@ $Config = @{
     }
 }
 
-# Warning shown when converting PowerShell Object to JSON
+# Convert without proper depth - data will be truncated
 $Config | ConvertTo-Json | Out-File C:\Temp\Config1.json
 
-# Content with truncated data
+# ============================================================================
+# VIEW TRUNCATED JSON CONTENT
+# ============================================================================
+
+# View the file content to see the truncated data
 Get-Content C:\Temp\Config1.json
+
+# ============================================================================
+# EXPECTED OUTPUT (TRUNCATED)
+# ============================================================================
+
+# {
+#   "Config": {
+#     "Database": "System.Collections.Hashtable",
+#     "Azure": "System.Collections.Hashtable",
+#     "ServiceAccount": [
+#       "System.Collections.Hashtable",
+#       "System.Collections.Hashtable"
+#     ]
+#   }
+# }
+#
+# Note: The actual hashtable contents are replaced with type names!
+# This is unusable - always use -Depth parameter for nested objects

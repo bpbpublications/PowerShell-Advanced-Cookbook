@@ -1,214 +1,172 @@
-# String concatenation ( + operator)
+# Recipe: String Manipulation in PowerShell
+# Chapter 5: Working with Scripts
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# This demonstrates common string manipulation operations including
+# concatenation, replacement, extraction, splitting, joining, and case conversion.
+
+# ============================================================================
+# STRING CONCATENATION
+# ============================================================================
+
+# Using the + operator to concatenate strings
 $First = "Lightning"
 $Last = "Girl"
 $Name = $First + " " + $Last
+# Output: Lightning Girl
 
-#PS C:\Temp> $Name
-#Lightning Girl
+# ============================================================================
+# SEARCH AND REPLACE
+# ============================================================================
 
-#######################################
-
-# String search and replace (String method)
+# String method: Replace() - case-sensitive, literal match
 $Text = "These superheroes are Villains: Comet, Lightning Girl"
 $Text = $Text.Replace("Villains", "Heroes")
+# Output: These superheroes are Heroes: Comet, Lightning Girl
 
-#PS C:\Temp> $Text
-#These superheroes are Heroes: Comet, Lightning Girl
-
-# String search and replace (Operator)
+# Operator: -replace - case-insensitive by default, supports regex
 $Text = "These superheroes are Villains: Comet, Lightning Girl"
 $Text = $Text -replace "Villains", "Heroes"
+# Output: These superheroes are Heroes: Comet, Lightning Girl
 
-#PS C:\Temp> $Text
-#These superheroes are Heroes: Comet, Lightning Girl
-
-# String search and replace (Operator - Case-Insensitive)
+# Operator: -ireplace - explicitly case-insensitive
 $Text = "These superheroes are Villains: Comet, Lightning Girl"
 $Text = $Text -ireplace "villains", "heroes"
+# Output: These superheroes are heroes: Comet, Lightning Girl
 
-#PS C:\Temp> $Text
-#These superheroes are heroes: Comet, Lightning Girl
-
-# String search and replace (Operator - RegEx Pattern)
+# Operator with RegEx pattern
 $Text = "Comet has 47 HitPoints, Lightning Girl has 25 HitPoints"
 $Text = $Text -replace "\d+", "50"
+# Output: Comet has 50 HitPoints, Lightning Girl has 50 HitPoints
 
-#PS C:\Temp> $Text
-#Comet has 50 HitPoints, Lightning Girl has 50 HitPoints
+# ============================================================================
+# SUBSTRING EXTRACTION
+# ============================================================================
 
-#######################################
-
-# Substring extraction (String method, two arguments)
+# Substring with two arguments (startIndex, length)
 $Text = "Lightning Girl meets Comet"
-$Substring = $Text.Substring(10,4)
+$Substring = $Text.Substring(10, 4)
+# Output: Girl
 
-#PS C:\Temp> $Substring
-#Girl
-
-# Substring extraction (String method, one argument)
+# Substring with one argument (startIndex to end)
 $Text = "Lightning Girl meets Comet"
 $Substring = $Text.Substring(10)
+# Output: Girl meets Comet
 
-#PS C:\Temp> $Substring
-#Girl meets Comet
+# ============================================================================
+# REGEX PATTERN MATCHING
+# ============================================================================
 
-#######################################
-
+# Extract email addresses using regex
 $Text = "My personal email is email@home.com and my work email is email@work.com"
-$Emails = [regex]::Matches($Text, "[a-zA-Z0–9._%+-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,}") | ForEach-Object { $_.Value }
+$Emails = [regex]::Matches($Text, "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}") |
+    ForEach-Object { $_.Value }
+# Output: email@home.com, email@work.com
 
-#PS C:\Temp> $Emails
-#email@home.com
-#email@work.com
-
-
+# Extract IP addresses using regex
 $Text = "Server 1: 192.168.1.100, Server 2: 10.0.0.2, Gateway: 172.16.0.1"
-$IPAddresses = [regex]::Matches($Text, "\b(?:\d{1,3}\.){3}\d{1,3}\b") | ForEach-Object { $_.Value }
+$IPAddresses = [regex]::Matches($Text, "\b(?:\d{1,3}\.){3}\d{1,3}\b") |
+    ForEach-Object { $_.Value }
+# Output: 192.168.1.100, 10.0.0.2, 172.16.0.1
 
-#PS C:\Temp> $IPAddresses
-#192.168.1.100
-#10.0.0.2
-#172.16.0.1
+# Extract MAC addresses using regex
+$Text = "Device 1: AA:BB:CC:DD:EE:FF, Device 2: 11:22:33:44:55:66"
+$MACAddresses = [regex]::Matches($Text, "([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})") |
+    ForEach-Object { $_.Value }
+# Output: AA:BB:CC:DD:EE:FF, 11:22:33:44:55:66
 
+# ============================================================================
+# SPLITTING STRINGS
+# ============================================================================
 
-$Text = "Device 1: AA:BB:CC:DD:EE:FF, Device 2: 11:22:33:44:55:66, Device 3: 00:11:22:33:44:55"
-$MACAddresses = [regex]::Matches($Text, "([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})") | ForEach-Object { $_.Value }
-
-#PS C:\Temp> $MACAddresses
-#AA:BB:CC:DD:EE:FF
-#11:22:33:44:55:66
-#00:11:22:33:44:55
-
-
-#######################################
-
-# Splitting string using Split() method
+# Split() method with delimiter
 $Text = "Comet;Lightning Girl;Blue Ghost;Evilin"
 $Array = $Text.Split(";")
+# Output: Comet, Lightning Girl, Blue Ghost, Evilin (as array)
 
-#PS C:\Temp> $Array
-#Comet
-#Lightning Girl
-#Blue Ghost
-#Evilin
-
-# Splitting string using -split operator
+# -split operator (supports regex)
 $Text = "Comet;Lightning Girl;Blue Ghost;Evilin"
 $Array = $Text -split ";"
+# Output: Comet, Lightning Girl, Blue Ghost, Evilin (as array)
 
-#PS C:\Temp> $Array
-#Comet
-#Lightning Girl
-#Blue Ghost
-#Evilin
-
-# Splitting string using -split operator and regex delimiter pattern
+# -split with regex pattern (multiple delimiters)
 $Text = "Comet;Lightning Girl,Blue Ghost#Evilin"
 $Array = $Text -split "[;,#]"
+# Output: Comet, Lightning Girl, Blue Ghost, Evilin (as array)
 
-#PS C:\Temp> $Array
-#Comet
-#Lightning Girl
-#Blue Ghost
-#Evilin
+# ============================================================================
+# JOINING ARRAYS
+# ============================================================================
 
-#######################################
-
-# Joining string array with -join operator and ; as delimiter
-$Array = @(
-    "Comet",
-    "Lightning Girl",
-    "Blue Ghost",
-    "Evilin"
-    )
-
+# -join operator with delimiter
+$Array = @("Comet", "Lightning Girl", "Blue Ghost", "Evilin")
 $Text = $Array -join ";"
+# Output: Comet;Lightning Girl;Blue Ghost;Evilin
 
-#PS C:\Temp> $Text
-#Comet;Lightning Girl;Blue Ghost;Evilin
-
-# Joining string array with -join operator and empty string as delimiter
-$Array = @(
-    "Comet",
-    "Lightning Girl",
-    "Blue Ghost",
-    "Evilin"
-    )
-
+# -join with empty string (concatenate)
+$Array = @("Comet", "Lightning Girl", "Blue Ghost", "Evilin")
 $Text = $Array -join ""
+# Output: CometLightning GirlBlue GhostEvilin
 
-#PS C:\Temp> $Text      
-#CometLightning GirlBlue GhostEvilin
+# ============================================================================
+# TRIMMING WHITESPACE
+# ============================================================================
 
-
-
-#######################################
-
-# Using string Trim() method to remove only whitespace
+# Trim() - removes whitespace from both ends
 $Text = "     Villains vs. Heroes      "
 $Text = $Text.Trim()
+# Output: Villains vs. Heroes
 
-#PS C:\Temp> $Text
-#Villains vs. Heroes
-
-# Using string Trim() method to remove only *
+# Trim specific character
 $Text = "***     Villains vs. Heroes      ***"
 $Text = $Text.Trim("*")
+# Output:      Villains vs. Heroes
 
-#PS C:\Temp> $Text
-#     Villains vs. Heroes  
-
-# Using string Trim() method with pattern to remove whitespace and *
+# Trim multiple characters using char array
 $Text = "***     Villains vs. Heroes      ***"
-$Text = $Text.Trim("[* ]")
+$Text = $Text.Trim([char[]]"* ")
+# Output: Villains vs. Heroes
 
-#PS C:\Temp> $Text
-#Villains vs. Heroes
+# TrimStart() and TrimEnd() for one-sided trimming
+# $Text.TrimStart()  # Left side only
+# $Text.TrimEnd()    # Right side only
 
-#######################################
+# ============================================================================
+# CASE CONVERSION
+# ============================================================================
 
-# String conversion to UPPERCASE
+# Convert to UPPERCASE
 $Text = "Comet is a Hero"
 $Text = $Text.ToUpper()
+# Output: COMET IS A HERO
 
-#PS C:\Temp> $Text
-#COMET IS A HERO
-
-# String conversion to lowercase
+# Convert to lowercase
 $Text = "COMET is a Hero"
 $Text = $Text.ToLower()
+# Output: comet is a hero
 
-#PS C:\Temp> $Text
-#comet is a hero
+# ============================================================================
+# PADDING
+# ============================================================================
 
-#######################################
-
-# Left aligned padding with PadLeft() method
+# PadLeft - add padding to left (right-align text)
 $Text = "Lightning Girl"
 $Text = $Text.PadLeft(20)
+# Output: "      Lightning Girl"
 
-#PS C:\Temp> """$Text"""
-#"      Lightning Girl"
-
-# Right aligned padding with PadRight() method
+# PadRight - add padding to right (left-align text)
 $Text = "Lightning Girl"
 $Text = $Text.PadRight(20)
+# Output: "Lightning Girl      "
 
-#PS C:\Temp> """$Text"""
-#"Lightning Girl      "
-
-# Using * as padding character
+# Custom padding character
 $Text = "Lightning Girl"
 $Text = $Text.PadRight(20, "*")
+# Output: "Lightning Girl******"
 
-#PS C:\Temp> """$Text"""
-#"Lightning Girl******"
-
-# Add equally left and right aligned padding with * as padding character
+# Center text with equal padding on both sides
 $Text = "Lightning Girl"
 $Padding = 20
-$Text = $Text.PadLeft($Padding, "*").PadRight( $Padding + ($Padding - $Text.Length) , "*")
-
-#PS C:\Temp> """$Text"""
-#"*****Lightning Girl*****"
+$Text = $Text.PadLeft($Padding, "*").PadRight($Padding + ($Padding - $Text.Length), "*")
+# Output: "***Lightning Girl***"
 

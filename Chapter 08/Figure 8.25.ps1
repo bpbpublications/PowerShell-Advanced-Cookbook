@@ -1,3 +1,14 @@
+# Figure 8.25 - Accessing JSON Array Items by Index
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates accessing specific array elements using index notation.
+
+# ============================================================================
+# CREATE AND SAVE JSON CONFIG
+# ============================================================================
+
 $Config = @{
     Config = @{
         Database = @{
@@ -13,12 +24,12 @@ $Config = @{
         }
         ServiceAccount = @(
             @{
-                Id = 1
+                Id       = 1
                 UserName = "Service.DBUser"
                 Password = "ThisIsARandomPwd"
             }
             @{
-                Id = 2
+                Id       = 2
                 UserName = "Service.AzureUser"
                 Password = "VerySecretPwd"
             }
@@ -26,16 +37,47 @@ $Config = @{
     }
 }
 
-# Write Json config file
+# Write JSON config file
 $Config | ConvertTo-Json -Depth 3 | Out-File C:\Temp\Config1.json
 
-# Json file content
+# ============================================================================
+# READ JSON AND ACCESS BY INDEX
+# ============================================================================
+
+# Read and convert from JSON
 $Config = Get-Content C:\Temp\Config1.json | ConvertFrom-Json
 
-# Using indexing to get specific data from the ServiceAccount array within the configuration data
-
+# Access specific array elements using zero-based index
+# Index [0] = first element (Service.DBUser)
 $Config.Config.ServiceAccount[0].UserName
 $Config.Config.ServiceAccount[0].Password
 
+# Index [1] = second element (Service.AzureUser)
 $Config.Config.ServiceAccount[1].UserName
 $Config.Config.ServiceAccount[1].Password
+
+# ============================================================================
+# INDEX ACCESS PATTERN
+# ============================================================================
+
+# Array[index].Property
+# - [0] = First item
+# - [1] = Second item
+# - [-1] = Last item (PowerShell supports negative indexing)
+# - [0..1] = First two items (range)
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# $Config.Config.ServiceAccount[0].UserName:
+# Service.DBUser
+#
+# $Config.Config.ServiceAccount[0].Password:
+# ThisIsARandomPwd
+#
+# $Config.Config.ServiceAccount[1].UserName:
+# Service.AzureUser
+#
+# $Config.Config.ServiceAccount[1].Password:
+# VerySecretPwd

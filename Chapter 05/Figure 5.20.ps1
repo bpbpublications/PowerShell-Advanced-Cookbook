@@ -1,11 +1,60 @@
-# This is an example since the signature will be invalid on other systems that the one it was created on
+# Figure 5.20 - Modified Signed Script (Invalid Signature)
+# Chapter 5: Working with Scripts
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# This script was signed but then modified, making the signature invalid.
+# This demonstrates what happens when a signed script is tampered with.
+#
+# Platform: Windows only
+
+# ============================================================================
+# EXECUTION POLICY REQUIREMENT
+# ============================================================================
+
 # Execution policy should be set to AllSigned.
 # Note that changes to the execution policy requires administrator privileges
 
-# I need to sign this script!
+# ============================================================================
+# SCRIPT CONTENT (MODIFIED AFTER SIGNING)
+# ============================================================================
 
 Write-Output "I need to sign this script!"
 # Invalid
+
+# ============================================================================
+# SIGNATURE VALIDATION
+# ============================================================================
+
+# Get-AuthenticodeSignature will show:
+# SignerCertificate: [Thumbprint]      Status: HashMismatch
+#
+# The signature is invalid because the script content was modified
+# after it was signed. The hash of the current content doesn't match
+# the hash stored in the signature.
+
+# ============================================================================
+# EXPECTED ERROR (AllSigned Policy, Invalid Signature)
+# ============================================================================
+
+# .\Figure 5.20.ps1 : File .\Figure 5.20.ps1 cannot be loaded.
+# The contents of file .\Figure 5.20.ps1 might have been changed by an
+# unauthorized user or process, because the hash of the file does not
+# match the hash stored in the digital signature.
+# The script cannot run on the specified system.
+#     + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+#     + FullyQualifiedErrorId : UnauthorizedAccess
+
+# ============================================================================
+# SOLUTION
+# ============================================================================
+
+# To fix an invalid signature, the script must be re-signed:
+# $Cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+# Set-AuthenticodeSignature -FilePath ".\Figure 5.20.ps1" -Certificate $Cert
+
+# ============================================================================
+# SIGNATURE BLOCK (NO LONGER VALID)
+# ============================================================================
 
 # SIG # Begin signature block
 # MIIIogYJKoZIhvcNAQcCoIIIkzCCCI8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

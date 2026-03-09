@@ -1,11 +1,37 @@
-# This is an example since the signature will be invalid on other systems that the one it was created on
+# Figure 5.19 - Signed Script with AllSigned Execution Policy
+# Chapter 5: Working with Scripts
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# This script has been signed and can run when execution policy is AllSigned.
+# Note: The signature is only valid on the system where it was created.
+#
+# Platform: Windows only
+
+# ============================================================================
+# EXECUTION POLICY REQUIREMENT
+# ============================================================================
+
 # Execution policy should be set to AllSigned.
 # Note that changes to the execution policy requires administrator privileges
 
-# I need to sign this script!
+# ============================================================================
+# SCRIPT CONTENT
+# ============================================================================
 
 Write-Output "I need to sign this script!"
 
+# ============================================================================
+# EXPECTED OUTPUT (on original system)
+# ============================================================================
+
+# I need to sign this script!
+#
+# Get-AuthenticodeSignature shows:
+# SignerCertificate: [Thumbprint]      Status: Valid
+
+# ============================================================================
+# SIGNATURE BLOCK
+# ============================================================================
 
 # SIG # Begin signature block
 # MIIIogYJKoZIhvcNAQcCoIIIkzCCCI8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

@@ -1,44 +1,45 @@
-# # Create an XML object
-# $xmlDocument = New-Object System.Xml.XmlDocument
+# Recipe: Creating XML Documents Programmatically
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates building complex XML documents using System.Xml.XmlDocument class.
 
-# # Create root element
-# $root = $xmlDocument.CreateElement("library")
-# $xmlDocument.AppendChild($root)
+# ============================================================================
+# CREATE XML DOCUMENT INSTANCE
+# ============================================================================
 
-# # Create book elements
-# $book1 = $xmlDocument.CreateElement("book")
-# $root.AppendChild($book1)
-
-# $title1 = $xmlDocument.CreateElement("title")
-# $title1.InnerText = "Book 1"
-# $book1.AppendChild($title1)
-
-# # Save the XML document to a file
-# $xmlDocument.Save("output.xml")
-
-
-# Create an XML object
+# Create a new XML document object
 $xmlDocument = New-Object System.Xml.XmlDocument
 
-# Create the XML declaration
+# Create and append the XML declaration (<?xml version="1.0"...?>)
 $declaration = $xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", $null)
 $xmlDocument.AppendChild($declaration)
 
-# Create the root element
+# ============================================================================
+# CREATE ROOT ELEMENT
+# ============================================================================
+
+# Create the root <publisher> element
 $publisher = $xmlDocument.CreateElement("publisher")
 $xmlDocument.AppendChild($publisher)
 
-# Create the first book element
+# ============================================================================
+# CREATE FIRST BOOK ELEMENT
+# ============================================================================
+
+# Create <book> element with id attribute
 $book1 = $xmlDocument.CreateElement("book")
 $book1.SetAttribute("id", "1")
 
-# Create sub-elements for the first book
+# Create <title> element with language attribute
 $title1 = $xmlDocument.CreateElement("title")
 $title1Lang = $xmlDocument.CreateAttribute("lang")
 $title1Lang.Value = "en"
 $title1.InnerText = "Python for Developers"
 $title1.Attributes.Append($title1Lang)
 
+# Create other sub-elements for first book
 $author1 = $xmlDocument.CreateElement("author")
 $author1.InnerText = "Mohit Raj"
 
@@ -52,24 +53,29 @@ $isbn1 = $xmlDocument.CreateElement("isbn")
 $isbn1.SetAttribute("format", "paperback")
 $isbn1.InnerText = "978-8194401872"
 
-# Append sub-elements to the first book element
+# Append all sub-elements to first book
 $book1.AppendChild($title1)
 $book1.AppendChild($author1)
 $book1.AppendChild($technology1)
 $book1.AppendChild($year1)
 $book1.AppendChild($isbn1)
 
-# Create the second book element (similar to the first)
+# ============================================================================
+# CREATE SECOND BOOK ELEMENT
+# ============================================================================
+
+# Create <book> element with id attribute
 $book2 = $xmlDocument.CreateElement("book")
 $book2.SetAttribute("id", "2")
 
-# Create sub-elements for the second book
+# Create <title> element with language attribute
 $title2 = $xmlDocument.CreateElement("title")
 $title2Lang = $xmlDocument.CreateAttribute("lang")
 $title2Lang.Value = "en"
 $title2.InnerText = "PowerShell Advanced Cookbook"
 $title2.Attributes.Append($title2Lang)
 
+# Create other sub-elements for second book
 $author2 = $xmlDocument.CreateElement("author")
 $author2.InnerText = "Morten E. Hansen"
 
@@ -83,16 +89,45 @@ $isbn2 = $xmlDocument.CreateElement("isbn")
 $isbn2.SetAttribute("format", "paperback")
 $isbn2.InnerText = "978-XXXXXXXXXX"
 
-# Append sub-elements to the second book element
+# Append all sub-elements to second book
 $book2.AppendChild($title2)
 $book2.AppendChild($author2)
 $book2.AppendChild($technology2)
 $book2.AppendChild($year2)
 $book2.AppendChild($isbn2)
 
-# Append book elements to the publisher
+# ============================================================================
+# APPEND BOOKS TO PUBLISHER
+# ============================================================================
+
 $publisher.AppendChild($book1)
 $publisher.AppendChild($book2)
 
+# ============================================================================
+# SAVE XML DOCUMENT
+# ============================================================================
+
 # Save the XML document to a file
 $xmlDocument.Save("example.xml")
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# <?xml version="1.0" encoding="UTF-8"?>
+# <publisher>
+#   <book id="1">
+#     <title lang="en">Python for Developers</title>
+#     <author>Mohit Raj</author>
+#     <technology>Python</technology>
+#     <year>2019</year>
+#     <isbn format="paperback">978-8194401872</isbn>
+#   </book>
+#   <book id="2">
+#     <title lang="en">PowerShell Advanced Cookbook</title>
+#     <author>Morten E. Hansen</author>
+#     <technology>PowerShell</technology>
+#     <year>2023</year>
+#     <isbn format="paperback">978-XXXXXXXXXX</isbn>
+#   </book>
+# </publisher>

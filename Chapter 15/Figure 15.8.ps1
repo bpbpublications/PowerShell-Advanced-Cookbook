@@ -1,221 +1,227 @@
-# This is the code for the Windows Service script:
-
-
-<#	
-	.NOTES
-	===========================================================================
-	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2023 v5.8.235
-	 Created on:   	09-01-2024 19:42
-	 Created by:   	Morten Hansen
-	 Organization: 	
-	 Filename:     	
-	===========================================================================
-	.DESCRIPTION
-		Description of the PowerShell service.
-#>
-
-
-# Warning: Do not rename Start-MyService, Invoke-MyService and Stop-MyService functions
-
-
-function Start-MyService
-{
-	# Place one time startup code here.
-	$ErrorActionPreference = 'Stop'
-	
-	# Initialize global variables and open connections if needed
-	$global:bRunService = $true
-	$global:bServiceRunning = $false
-	$global:bServicePaused = $false
-}
-
-function Invoke-MyService
-{
-	$global:bServiceRunning = $true
-	while($global:bRunService) {
-		try 
-		{
-			if($global:bServicePaused -eq $false) #Only act if service is not paused
-			{
-				#Place code for your service here
-				#e.g. $ProcessList = Get-Process solitaire -ErrorAction SilentlyContinue
-				Main
-				# Use Write-Host or any other PowerShell output function to write to the System's application log
-			}
-		}
-		catch
-		{
-			# Log exception in application log
-			Write-Host $_.Exception.Message
-		}
-		# Adjust sleep timing to determine how often your service becomes active
-		if($global:bServicePaused -eq $true)
-		{
-			Start-Sleep -Seconds 20 # if the service is paused we sleep longer between checks
-		}
-		else
-		{
-			Start-Sleep –Seconds 60 # a lower number will make your service active more often and use more CPU cycles
-		}
-	}
-	$global:bServiceRunning	= $false
-}
-
-function Stop-MyService
-{
-	$global:bRunService = $false # Signal main loop to exit
-	$CountDown = 30 # Maximum wait for loop to exit
-	while($global:bServiceRunning -and $Countdown -gt 0)
-	{
-		Start-Sleep -Seconds 1 # wait for your main loop to exit
-		$Countdown = $Countdown - 1
-	}
-	# Place code to be executed on service stop here
-	# Close files and connections, terminate jobs and
-	# use remove-module to unload blocking modules
-}
-
-function Pause-MyService
-{
-	# Service is being paused
-	# Save state 
-	$global:bServicePaused = $true
-	# Note that the thread your PowerShell script is running on is not suspended on 'pause'.
-	# It is your responsibility in the service loop to pause processing until a 'continue' command is issued.
-	# It is recommended to sleep for longer periods between loop iterations when the service is paused.
-	# in order to prevent excessive CPU usage by simply waiting and looping.
-}
-
-function Continue-MyService
-{
-	# Service is being continued from a paused state
-	# Restore any saved states if needed
-	$global:bServicePaused = $false
-}
-
-function Main
-{
-	try
-	{
-		$WeatherMessage = Return-Weather
-		Add-LogToJson -LogFilePath C:\Temp\WeatherLog.json -Message $WeatherMessage
-	}
-	catch
-	{
-		$_
-	}
-}
-
-function Return-Weather
-{
-	
-	$ApiKey = "f2d671ac92e02bdd267cd98a1b7d98a3"
-	$City = "Aarhus"
-	$ApiUrl = "http://api.openweathermap.org/data/2.5/weather?q=$City&appid=$ApiKey"
-	
-	$Response = Invoke-RestMethod -Uri $ApiUrl -Method Get
-	
-	$Weather = $Response.weather.description
-	$Temp = ($Response.main.temp) - 273.15 # From Kelvin to Celcius
-	$TempFeels = ($Response.main.feels_like) - 273.15 # From Kelvin to Celcius
-	
-	Return "The weather in $City is $Weather with a temperature of {0:F2} Celcius that feels like {1:F2} Celcius" -f $Temp, $TempFeels
-}
+# Figure 15.8 - Windows Service Script Implementation
+# Chapter 15: PowerShell Studio and Windows Services
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Windows (PowerShell Studio - SAPIEN Technologies)
+# Prerequisites: PowerShell Studio installed, Administrator privileges
+#
+# This demonstrates a complete Windows Service implementation in PowerShell.
 
 <#
-	.SYNOPSIS
-		Write Log to a file in JSON format compressed in one line for Datadog optimization.
-	
-	.DESCRIPTION
-		Write Log to a file in JSON format compressed in one line for Datadog optimization.
-		The file can be read by Datadog agent and attributes are properly added to Datadog logs.
-		Date attribute will be added in format: "dd-MM-yyyy HH:mm:ss,fff".
-		Using Streamwriter to write to file in order to not block the file wile changing it.
-	
-	.PARAMETER LogFilePath
-		Path to a file (.json, .txt, .log). If the file does not exist, it will be created (If permissions allow it)
-	
-	.PARAMETER LogLevel
-		Error level to set. Valid parameters are: INFO, WARNING, ERROR, CRITICAL, DEBUG and OK.
-		Defaults to INFO.
-	
-	.PARAMETER Message
-		Enter any message in STRING format.
-	
-	.PARAMETER Adds
-		Optional parameter that takes a hastable @{} with additional attributes to add to Datadog log.
-		An example could be to add name and place: @{name="Morten"; place="AarhusN"}.
-		Note some attributes could be overwriting Custom Datadog attributes. Refere to the Datadog documentation for more info.
-	
-	.EXAMPLE
-		PS C:\> New-LogToJson -LogFilePath 'c:\Temp\Logfile.json' -Message 'This is a test message'
-
-	.EXAMPLE
-		PS C:\> New-LogToJson -LogFilePath 'c:\Temp\Logfile.json' -LogLevel 'ERROR' -Message 'This is a test ERROR message'	-Adds @{name="Morten"; place="AarhusN"}
-
+    .NOTES
+    ===========================================================================
+     Created with:  SAPIEN Technologies, Inc., PowerShell Studio 2023 v5.8.235
+     Created on:    09-01-2024 19:42
+     Created by:    Morten Hansen
+    ===========================================================================
+    .DESCRIPTION
+        PowerShell-based Windows Service that logs weather data.
+        Demonstrates the service lifecycle: Start, Run, Pause, Continue, Stop.
 #>
-function Add-LogToJson
-{
-	[CmdletBinding()]
-	Param (
-		[Parameter(Mandatory = $true, HelpMessage = "Path to logfile")]
-		[String]$LogFilePath,
-		[Parameter(Mandatory = $false, HelpMessage = "Logging Level")]
-		[ValidateSet('INFO', 'WARNING', 'ERROR', 'CRITICAL', 'DEBUG', 'OK')]
-		[String]$LogLevel = 'INFO',
-		[Parameter(Mandatory = $true, HelpMessage = "Message String")]
-		[String]$Message,
-		[hashtable]$Adds
-		
-	)
-	
-	BEGIN
-	{
-		#Test if logfile exist, else create it
-		if (!(Test-Path $LogFilePath))
-		{
-			New-Item -Path $LogFilePath -ItemType File -Force | Out-Null
-			Write-Verbose "Logfile created: $LogFilePath"
-		}
-		
-		#Date/Time info 
-		$Time = Get-Date -Format "dd-MM-yyyy HH:mm:ss,fff"
-		[String]$LogString = "$Time - $LogLevel : $Message"
-		
-		$Body = @{ }
-		
-		$body.Add("timestamp", $Time)
-		$body.Add("message", $Message)
-		$body.Add("level", $LogLevel)
-		#$body.Add("text", $Message)
-		
-		if ($Adds)
-		{
-			
-			$Body = $Body + $Adds
-		}
-		
-	}
-	PROCESS
-	{
-		#Add content to logfile 
-		try
-		{
-			$stream = [System.IO.StreamWriter]::new($LogFilePath, $true)
-			"$($body | ConvertTo-Json -Compress)" | ForEach-Object{ $stream.WriteLine($_) }
-		}
-		finally
-		{
-			$stream.close()
-		}
-		
-	}
-	END
-	{
-		Write-Verbose $LogString
-	}
-	
+
+# ============================================================================
+# SERVICE LIFECYCLE FUNCTIONS
+# ============================================================================
+# WARNING: Do not rename Start-MyService, Invoke-MyService, Stop-MyService,
+#          Pause-MyService, or Continue-MyService functions.
+#          These names are required by the service wrapper.
+
+function Start-MyService {
+    # Place one-time startup code here
+    # This runs when the service starts
+    $ErrorActionPreference = 'Stop'
+
+    # Initialize global variables for service state management
+    $global:bRunService = $true       # Controls main loop
+    $global:bServiceRunning = $false  # Indicates if loop is active
+    $global:bServicePaused = $false   # Indicates if service is paused
 }
 
+function Invoke-MyService {
+    # Main service loop - runs continuously while service is active
+    $global:bServiceRunning = $true
+
+    while ($global:bRunService) {
+        try {
+            # Only process if service is not paused
+            if ($global:bServicePaused -eq $false) {
+                # Call your main processing function
+                Main
+                # Write-Host outputs to System Application log
+            }
+        }
+        catch {
+            # Log exceptions to application log
+            Write-Host $_.Exception.Message
+        }
+
+        # Adjust sleep timing based on service state
+        if ($global:bServicePaused -eq $true) {
+            # Sleep longer when paused to reduce CPU usage
+            Start-Sleep -Seconds 20
+        }
+        else {
+            # Normal interval between processing cycles
+            Start-Sleep -Seconds 60
+        }
+    }
+
+    $global:bServiceRunning = $false
+}
+
+function Stop-MyService {
+    # Signal main loop to exit
+    $global:bRunService = $false
+
+    # Wait for main loop to exit gracefully (max 30 seconds)
+    $CountDown = 30
+    while ($global:bServiceRunning -and $Countdown -gt 0) {
+        Start-Sleep -Seconds 1
+        $Countdown = $Countdown - 1
+    }
+
+    # Place cleanup code here:
+    # - Close file handles
+    # - Close database connections
+    # - Terminate background jobs
+    # - Use Remove-Module for blocking modules
+}
+
+function Pause-MyService {
+    # Service is being paused via Service Control Manager
+    $global:bServicePaused = $true
+
+    # NOTE: The PowerShell thread is NOT suspended on pause
+    # Your code must check $bServicePaused and skip processing
+}
+
+function Continue-MyService {
+    # Service is being resumed from paused state
+    $global:bServicePaused = $false
+}
+
+# ============================================================================
+# MAIN PROCESSING FUNCTION
+# ============================================================================
+
+function Main {
+    try {
+        # Get weather data and log it
+        $WeatherMessage = Return-Weather
+        Add-LogToJson -LogFilePath C:\Temp\WeatherLog.json -Message $WeatherMessage
+    }
+    catch {
+        # Output error (goes to Application log)
+        $_
+    }
+}
+
+# ============================================================================
+# WEATHER API FUNCTION
+# ============================================================================
+
+function Return-Weather {
+    # OpenWeatherMap API configuration
+    $ApiKey = "f2d671ac92e02bdd267cd98a1b7d98a3"
+    $City = "Aarhus"
+    $ApiUrl = "http://api.openweathermap.org/data/2.5/weather?q=$City&appid=$ApiKey"
+
+    # Call the weather API
+    $Response = Invoke-RestMethod -Uri $ApiUrl -Method Get
+
+    # Extract weather data
+    $Weather = $Response.weather.description
+    $Temp = ($Response.main.temp) - 273.15      # Kelvin to Celsius
+    $TempFeels = ($Response.main.feels_like) - 273.15
+
+    # Return formatted message
+    return "The weather in $City is $Weather with a temperature of {0:F2} Celsius that feels like {1:F2} Celsius" -f $Temp, $TempFeels
+}
+
+# ============================================================================
+# JSON LOGGING FUNCTION
+# ============================================================================
+
+<#
+    .SYNOPSIS
+        Write log entry to JSON file (optimized for Datadog).
+
+    .DESCRIPTION
+        Writes log entries in compressed JSON format, one entry per line.
+        Compatible with Datadog agent log collection.
+
+    .PARAMETER LogFilePath
+        Path to log file (.json, .txt, .log)
+
+    .PARAMETER LogLevel
+        Severity level: INFO, WARNING, ERROR, CRITICAL, DEBUG, OK
+
+    .PARAMETER Message
+        Log message content
+
+    .PARAMETER Adds
+        Additional attributes as hashtable
+
+    .EXAMPLE
+        Add-LogToJson -LogFilePath 'C:\Temp\Log.json' -Message 'Test message'
+
+    .EXAMPLE
+        Add-LogToJson -LogFilePath 'C:\Temp\Log.json' -LogLevel 'ERROR' -Message 'Error occurred' -Adds @{server="SRV01"}
+#>
+function Add-LogToJson {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [String]$LogFilePath,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('INFO', 'WARNING', 'ERROR', 'CRITICAL', 'DEBUG', 'OK')]
+        [String]$LogLevel = 'INFO',
+
+        [Parameter(Mandatory = $true)]
+        [String]$Message,
+
+        [hashtable]$Adds
+    )
+
+    begin {
+        # Create log file if it doesn't exist
+        if (!(Test-Path $LogFilePath)) {
+            New-Item -Path $LogFilePath -ItemType File -Force | Out-Null
+            Write-Verbose "Logfile created: $LogFilePath"
+        }
+
+        # Build log entry
+        $Time = Get-Date -Format "dd-MM-yyyy HH:mm:ss,fff"
+        $Body = @{
+            timestamp = $Time
+            message   = $Message
+            level     = $LogLevel
+        }
+
+        # Add custom attributes if provided
+        if ($Adds) {
+            $Body = $Body + $Adds
+        }
+    }
+
+    process {
+        # Write to file using StreamWriter (non-blocking)
+        try {
+            $stream = [System.IO.StreamWriter]::new($LogFilePath, $true)
+            $stream.WriteLine(($Body | ConvertTo-Json -Compress))
+        }
+        finally {
+            $stream.Close()
+        }
+    }
+}
+
+# ============================================================================
+# SERVICE ENTRY POINT
+# ============================================================================
+
+# Start the service (called by service wrapper)
 Start-MyService
 Invoke-MyService
+

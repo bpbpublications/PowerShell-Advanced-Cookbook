@@ -1,3 +1,14 @@
+# Figure 8.7 - Modifying XML Values and Saving Changes
+# Chapter 8: Working with XML and JSON
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Cross-platform (PowerShell 5.1+ and PowerShell 7+)
+# Demonstrates how to modify XML element values and persist changes to file.
+
+# ============================================================================
+# CREATE AND SAVE XML CONFIGURATION
+# ============================================================================
+
 [xml]$XmlObject = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
@@ -19,23 +30,54 @@
 </Config>
 "@
 
-# Save to xml file
+# Save to XML file
 $XmlObject.Save("C:\Temp\Config3.xml")
 
-# Read from file, assign to variable
+# Read from file and assign to variable
 $Config = Get-Content C:\Temp\Config3.xml
 
-# View the Old password
+# ============================================================================
+# VIEW CURRENT VALUE
+# ============================================================================
+
+# Display the current password value
 Write-Output "Old Password: $($Config.Config.ServiceAccount.Password)"
 
-# Update/Change the password for the SA in memory
+# ============================================================================
+# MODIFY XML VALUE IN MEMORY
+# ============================================================================
+
+# Update the password value in the XML object (in memory only)
 $Config.Config.ServiceAccount.Password = "ThisIsANewPassword"
 
-# View the new Password
+# Verify the change in memory
 Write-Output "New Password: $($Config.Config.ServiceAccount.Password)"
 
-# Save the changes to and update the XMl file
+# ============================================================================
+# PERSIST CHANGES TO FILE
+# ============================================================================
+
+# Save the modified XML back to the file
+# Note: The Save() method properly formats the XML output
 $Config.Save("C:\Temp\Config3.xml")
 
-# View the new saved content of the XML file
+# Verify the file was updated
+Write-Output "`nUpdated file content:"
 Get-Content "C:\Temp\Config3.xml"
+
+# ============================================================================
+# EXPECTED OUTPUT
+# ============================================================================
+
+# Old Password: ThisIsARandomPwd
+# New Password: ThisIsANewPassword
+#
+# Updated file content:
+# <?xml version="1.0" encoding="UTF-8"?>
+# <Config>
+#   ...
+#   <ServiceAccount id="serviceaccount">
+#     <UserName>Service.DBUser</UserName>
+#     <Password>ThisIsANewPassword</Password>
+#   </ServiceAccount>
+# </Config>

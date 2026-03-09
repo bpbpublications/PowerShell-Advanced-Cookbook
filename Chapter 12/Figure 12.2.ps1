@@ -1,25 +1,44 @@
+# Figure 12.2 - Listing SharePoint Sites
+# Chapter 12: Microsoft 365 with PowerShell
+# PowerShell Advanced Cookbook - BPB Publications
+#
+# Platform: Windows (SharePoint Online Management Shell)
+# Prerequisites: Microsoft.Online.SharePoint.PowerShell module, SharePoint Admin rights
 
-# Requires connection to Sharepoint Online
+# ============================================================================
+# CONNECT TO SHAREPOINT ONLINE
+# ============================================================================
 
 # Connect using credential object
 $User = "SharePoint@bio-rent.dk"
 $Password = "Share@Point2023_Apps123"
 
-# Convert the client secret to a secure string
+# Convert the password to a secure string
 $SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
 
 # Create the PSCredential object
 $Credentials = New-Object System.Management.Automation.PSCredential($User, $SecurePassword)
 
-# Connect
+# Connect to SharePoint Online admin center
 Connect-SPOService -Url https://biorentdk-admin.sharepoint.com -Credential $Credentials
 
-# Listing available SharePoint site design templates using Get-SPOWebTemplate
+# ============================================================================
+# LIST SHAREPOINT SITES
+# ============================================================================
 
-#Listing all sites and the new ProjectX site using Get-SPOSite 
+# List all SharePoint sites in the tenant
 Get-SPOSite
 
-# Listing ProjectX site
-get-sposite `
--Identity https://biorentdk.sharepoint.com/sites/ProjectX | `
-Select-Object Title,Url,Owner,StorageQuota,Status
+# List a specific site by identity (URL) with selected properties
+Get-SPOSite `
+    -Identity https://biorentdk.sharepoint.com/sites/ProjectX |
+    Select-Object Title, Url, Owner, StorageQuota, Status
+
+# Expected Output:
+# Title       : ProjectX
+# Url         : https://biorentdk.sharepoint.com/sites/ProjectX
+# Owner       : admin@bio-rent.dk
+# StorageQuota: 26214400
+# Status      : Active
+#
+# NOTE: StorageQuota is in MB. 26214400 MB = 25 TB (default)
